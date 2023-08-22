@@ -4,18 +4,21 @@ from asts import  Number, Sum, Sub, Print
 
 
 class Parser():
-    def __init__(self):
+    def __init__(self, module, builder, printf):
         self.pg = ParserGenerator(
             # A list of all token names accepted by the parser.
             ['NUMBER', 'PRINT', 'OPEN_PAREN', 'CLOSE_PAREN',
              'SEMI_COLON', 'SUM', 'SUB']
         )
+        self.module = module
+        self.builder = builder
+        self.printf = printf
 
     def parse(self):
         @self.pg.production('program : PRINT OPEN_PAREN expression CLOSE_PAREN SEMI_COLON')
         def program(p):
-            return Print(p[2])
-
+            return Print(self.builder, self.module, self.printf, p[2])
+        
         @self.pg.production('expression : expression SUM expression')
         @self.pg.production('expression : expression SUB expression')
         def expression(p):
